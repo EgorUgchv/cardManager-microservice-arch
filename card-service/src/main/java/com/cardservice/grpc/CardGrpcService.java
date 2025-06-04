@@ -27,7 +27,7 @@ public class CardGrpcService extends CardServiceGrpc.CardServiceImplBase {
     @Override
     public void createCard(card.CardRequest cardRequest,
                            StreamObserver<card.CardResponse> responseObserver) {
-        log.info("createCard request received {}", cardRequest.toString());
+        log.info("CreateCard request received {}", cardRequest.toString());
 
         CardDto cardDto = cardMapper.mapToCardDto(cardRequest);
 

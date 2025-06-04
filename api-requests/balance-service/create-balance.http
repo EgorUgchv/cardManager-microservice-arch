@@ -1,0 +1,7 @@
+GRPC localhost:9001/BalanceService/CreateCardBalance
+Content-Type: application/json
+
+{
+    "cardNumber" : "1111111111111111",
+  "balanceAmount": 0
+}
