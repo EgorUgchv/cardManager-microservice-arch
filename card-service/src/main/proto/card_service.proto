@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "card";
+
+service CardService{
+  rpc CreateCard (CardRequest) returns (CardResponse);
+}
+
+message CardRequest {
+  string userId = 1;
+  string cardNumber = 2;
+  string cardHolderFullName = 3;
+  string cardHolderEmail = 4;
+  string expiryDate = 5;
+  double balance = 6;
+  string cardStatus = 7;
+}
+
+message CardResponse {
+  string cardId = 1;
+  string userId = 2;
+}
