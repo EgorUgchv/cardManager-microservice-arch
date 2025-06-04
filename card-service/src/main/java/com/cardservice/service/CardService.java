@@ -1,5 +1,6 @@
 package com.cardservice.service;
 
+import com.cardservice.dto.CardDto;
 import com.cardservice.mapper.CardMapper;
 import com.cardservice.model.Card;
 import com.cardservice.repository.CardRepository;
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Service;
 public class CardService {
     private final CardMapper cardMapper;
     private final CardRepository cardRepository;
-    public int createCard(card.CardRequest cardRequest) {
-        Card card = cardMapper.mapToCard(cardRequest);
-        card.setEncryptedCardNumber(cardRequest.getCardNumber());
+    public int createCard(CardDto cardDto) {
+        Card card = cardMapper.mapToCard(cardDto);
+        card.setEncryptedCardNumber(String.valueOf(cardDto.getCardNumber()));
         Card savedCard = cardRepository.save(card);
         return savedCard.getCardId();
     }

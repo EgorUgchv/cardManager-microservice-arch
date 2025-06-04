@@ -19,5 +19,5 @@ public interface CardMapper {
     List<CardDto> mapToCardDto(List<Card> cards);
     List<Card> mapToCard(List<CardDto> cardDtos);
 
-    Card mapToCard(CardRequest cardRequest);
+    CardDto mapToCardDto(CardRequest cardRequest);
 }

@@ -2,10 +2,9 @@ GRPC localhost:9000/CardService/CreateCard
 Content-Type: application/json
 
 {
-  "userId": "1",
-  "cardNumber": "1",
+  "userId": 2,
+  "cardNumber": 1111111111111112,
   "cardHolderFullName": "John Doe Merrel",
-  "cardHolderEmail": "example@text.com",
   "expiryDate": "2026-05-23",
   "balance": 6,
   "cardStatus": "ACTIVE"
