@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class CardBalanceService {
     private final CardBalanceRepository balanceRepository;
-    private final CardBalanceRepository cardBalanceRepository;
     private final CardBalanceMapper cardBalanceMapper;
     @Transactional
     public int createBalance(CardBalanceDto cardBalanceDto) {

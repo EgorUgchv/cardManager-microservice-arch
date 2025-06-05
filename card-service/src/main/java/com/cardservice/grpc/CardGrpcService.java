@@ -3,6 +3,7 @@ package com.cardservice.grpc;
 import card.CardResponse;
 import card.CardServiceGrpc;
 import com.cardservice.dto.CardDto;
+import com.cardservice.dto.CardResponseDto;
 import com.cardservice.mapper.CardMapper;
 import com.cardservice.service.CardService;
 import io.grpc.Status;
@@ -46,11 +47,12 @@ public class CardGrpcService extends CardServiceGrpc.CardServiceImplBase {
             return;
         }
 
-        int cardId = cardService.createCard(cardDto);
+        CardResponseDto cardResponseDto = cardService.createCard(cardDto);
 
         CardResponse.Builder response = CardResponse.newBuilder()
-                .setCardId(cardId)
-                .setUserId(cardRequest.getUserId());
+                .setUserId(cardRequest.getUserId())
+                .setCardId(cardResponseDto.getCardId())
+                .setBalanceId(cardResponseDto.getBalanceId());
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
     }

@@ -15,5 +15,5 @@ public class Balance {
     @Convert(converter = Encryptor.class)
     @Column(name = "encrypted_card_number", nullable = false, columnDefinition = "TEXT", unique = true)
     private String encryptedCardNumber;
-    private Integer balanceAmount;
+    private Long balanceAmount;
 }

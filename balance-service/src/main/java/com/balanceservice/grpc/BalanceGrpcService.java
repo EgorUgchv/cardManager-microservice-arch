@@ -22,6 +22,7 @@ private final CardBalanceService cardBalanceService;
         log.info("CreateCardBalance request received {}", balanceRequest.toString());
 
         CardBalanceDto cardBalanceDto = cardBalanceMapper.mapToCardBalanceDto(balanceRequest);
+
        int balanceId  = cardBalanceService.createBalance(cardBalanceDto);
 
         CardBalanceResponse.Builder response = CardBalanceResponse.newBuilder()

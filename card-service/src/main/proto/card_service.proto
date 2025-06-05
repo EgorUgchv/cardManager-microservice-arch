@@ -8,15 +8,16 @@ service CardService{
 }
 
 message CardRequest {
-  int64 userId = 1;
+  int32 userId = 1;
   string cardNumber = 2;
   string cardHolderFullName = 3;
   string expiryDate = 4;
-  double balance = 5;
+  int64 balanceAmount = 5;
   string cardStatus = 6;
 }
 
 message CardResponse {
-  int64 cardId = 1;
-  int64 userId = 2;
+  int32 cardId = 1;
+  int32 userId = 2;
+  int32 balanceId = 3;
 }

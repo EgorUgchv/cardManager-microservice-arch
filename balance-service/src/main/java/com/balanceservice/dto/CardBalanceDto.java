@@ -13,5 +13,5 @@ public class CardBalanceDto {
     @Pattern(regexp = "\\d{16}", message = "The card number must contain only 16 digits")
     @NotBlank
     private String cardNumber;
-    private Integer balanceAmount;
+    private Long balanceAmount;
 }
