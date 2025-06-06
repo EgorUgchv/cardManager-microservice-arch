@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package card.events;
+option java_multiple_files = true;
+
+message CardEvent {
+  int32 cardId = 1;
+  string cardHolderFullName = 2;
+  string  cardNumber = 3;
+  string expiryDate = 4;
+  string cardStatus = 5;
+  string event_type = 6;
+}
