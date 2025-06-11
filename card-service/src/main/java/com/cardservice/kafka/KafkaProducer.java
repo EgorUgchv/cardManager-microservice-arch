@@ -1,7 +1,7 @@
 package com.cardservice.kafka;
 
 import card.events.CardEvent;
-import com.cardservice.model.Card;
+import com.cardservice.event.CardSuccessfullyCreatedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -15,18 +15,16 @@ public class KafkaProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendEvent(Card card) {
+    public void sendEvent(CardSuccessfullyCreatedEvent cardCreatedEvent) {
         CardEvent event = CardEvent.newBuilder()
-                .setCardId(card.getCardId())
-                .setCardHolderFullName(card.getCardHolderFullName())
-                .setCardNumber(card.getEncryptedCardNumber())
-                .setExpiryDate(String.valueOf(card.getExpiryDate()))
-                .setCardStatus(String.valueOf(card.getCardStatus()))
+                .setCardId(cardCreatedEvent.getCardId())
+                .setUserId(cardCreatedEvent.getUserId())
+                .setBalanceId(cardCreatedEvent.getBalanceId())
+                .setCardHolderFullName(cardCreatedEvent.getCardHolderFullName())
+                .setCardNumber(cardCreatedEvent.getCardNumber())
                 .setEventType("CARD_CREATED")
                 .build();
-
         try {
-
             kafkaTemplate.send("card", event.toByteArray());
 
         } catch (Exception e) {

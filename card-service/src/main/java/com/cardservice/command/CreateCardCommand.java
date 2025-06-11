@@ -1,17 +1,18 @@
-package com.cardservice.dto;
+package com.cardservice.command;
 
 import com.cardservice.model.CardStatus;
-import lombok.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Builder
-public class CardDto {
+public class CreateCardCommand {
     private Integer userId;
     @Pattern(regexp = "\\d{16}", message = "The card number must contain only 16 digits")
     @NotBlank
@@ -21,5 +22,6 @@ public class CardDto {
     @Future
     private LocalDate expiryDate;
     private CardStatus cardStatus;
+    @Min(0)
     private Long balanceAmount;
 }

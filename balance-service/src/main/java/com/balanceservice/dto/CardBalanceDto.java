@@ -1,5 +1,7 @@
 package com.balanceservice.dto;
 
+import com.balanceservice.dto.enums.BalanceStatus;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -14,4 +16,6 @@ public class CardBalanceDto {
     @NotBlank
     private String cardNumber;
     private Long balanceAmount;
+    @Min(0)
+    private BalanceStatus balanceStatus;
 }

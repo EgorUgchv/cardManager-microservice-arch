@@ -3,8 +3,10 @@ package com.balanceservice.grpc;
 import balance.BalanceServiceGrpc;
 import balance.CardBalanceResponse;
 import com.balanceservice.dto.CardBalanceDto;
+import com.balanceservice.exception.CardBalanceAlreadyExistsException;
 import com.balanceservice.mapper.CardBalanceMapper;
 import com.balanceservice.service.CardBalanceService;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +25,19 @@ private final CardBalanceService cardBalanceService;
 
         CardBalanceDto cardBalanceDto = cardBalanceMapper.mapToCardBalanceDto(balanceRequest);
 
-       int balanceId  = cardBalanceService.createBalance(cardBalanceDto);
+        try{
+            int balanceId  = cardBalanceService.createBalance(cardBalanceDto);
 
-        CardBalanceResponse.Builder response = CardBalanceResponse.newBuilder()
-                .setBalanceId(balanceId);
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+            CardBalanceResponse.Builder response = CardBalanceResponse.newBuilder()
+                    .setBalanceId(balanceId);
+            responseObserver.onNext(response.build());
+            responseObserver.onCompleted();
+            log.info("CreateCardBalance response sent {}", response);
+        }
+        catch (CardBalanceAlreadyExistsException e){
+            Status status = Status.ALREADY_EXISTS.withDescription(e.getMessage());
+            responseObserver.onError(status.asRuntimeException());
+        }
     }
 
 }

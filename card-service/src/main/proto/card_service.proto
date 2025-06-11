@@ -4,7 +4,7 @@ option java_multiple_files = true;
 option java_package = "card";
 
 service CardService{
-  rpc CreateCard (CardRequest) returns (CardResponse);
+  rpc CreateCard (CardRequest) returns ( CardResponse);
 }
 
 message CardRequest {

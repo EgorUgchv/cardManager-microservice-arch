@@ -4,7 +4,7 @@ import card.CardResponse;
 import card.CardServiceGrpc;
 import com.cardservice.dto.CardDto;
 import com.cardservice.dto.CardResponseDto;
-import com.cardservice.exception.CardAlreadyExistsExceptioin;
+import com.cardservice.exception.CardAlreadyExistsException;
 import com.cardservice.mapper.CardMapper;
 import com.cardservice.service.CardService;
 import io.grpc.Status;
@@ -25,7 +25,6 @@ public class CardGrpcService extends CardServiceGrpc.CardServiceImplBase {
     private final CardMapper cardMapper;
     private final CardService cardService;
     private final Validator validator;
-
     @Override
     public void createCard(card.CardRequest cardRequest,
                            StreamObserver<card.CardResponse> responseObserver) {
@@ -41,18 +40,10 @@ public class CardGrpcService extends CardServiceGrpc.CardServiceImplBase {
                 sendError(responseObserver, status);
                 return;
             }
+             cardService.createCard(cardDto, responseObserver);
 
-            CardResponseDto cardResponseDto = cardService.createCard(cardDto);
 
-            CardResponse.Builder response = CardResponse.newBuilder()
-                    .setUserId(cardRequest.getUserId())
-                    .setCardId(cardResponseDto.getCardId())
-                    .setBalanceId(cardResponseDto.getBalanceId());
-
-            responseObserver.onNext(response.build());
-            responseObserver.onCompleted();
-
-        } catch (CardAlreadyExistsExceptioin e) {
+        } catch (CardAlreadyExistsException e) {
             Status status = Status.ALREADY_EXISTS.withDescription(e.getMessage());
             responseObserver.onError(status.asRuntimeException());
         } catch (Exception e) {
