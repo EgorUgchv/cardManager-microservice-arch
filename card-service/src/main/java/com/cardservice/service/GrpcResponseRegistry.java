@@ -21,13 +21,13 @@ public class GrpcResponseRegistry {
     }
 
     public void handleCardSuccess(CardSuccessfullyCreatedEvent cardEvent) {
-        log.info("Received Card successful event with card number " + cardEvent.getCardNumber());
+        log.info("Received Card successful event with card number {}", cardEvent.getCardNumber());
         StreamObserver<CardResponse> observer = pendingResponses.get(cardEvent.getCardNumber());
         if(observer != null) {
             CardResponse.Builder response = CardResponse.newBuilder()
                     .setCardId(cardEvent.getCardId())
                     .setUserId(cardEvent.getUserId())
-                    .setCardId(cardEvent.getCardId());
+                    .setBalanceId(cardEvent.getCardId());
 
             observer.onNext(response.build());
             observer.onCompleted();
