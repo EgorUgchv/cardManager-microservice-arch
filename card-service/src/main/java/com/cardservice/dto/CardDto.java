@@ -21,5 +21,6 @@ public class CardDto {
     @Future
     private LocalDate expiryDate;
     private CardStatus cardStatus;
+    @Min(0)
     private Long balanceAmount;
 }

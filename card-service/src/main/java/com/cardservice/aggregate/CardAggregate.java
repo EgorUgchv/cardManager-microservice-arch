@@ -16,6 +16,7 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 
@@ -33,13 +34,12 @@ public class CardAggregate {
     @Future
     private LocalDate expiryDate;
     private CardStatus cardStatus;
-    private CardRepository cardRepository;
 
     public CardAggregate() {
     }
 
     @CommandHandler
-    public CardAggregate(CreateCardCommand createCardCommand) {
+    public CardAggregate(@Validated CreateCardCommand createCardCommand) {
         CardCreatedEvent cardCreatedEvent = CardCreatedEvent.builder()
                 .userId(createCardCommand.getUserId())
                 .cardNumber(createCardCommand.getCardNumber())
@@ -50,8 +50,9 @@ public class CardAggregate {
                 .build();
         AggregateLifecycle.apply(cardCreatedEvent);
     }
+
     @EventSourcingHandler
-    public void on(CardCreatedEvent event) {
+    public void on(@Validated CardCreatedEvent event) {
         this.userId = event.getUserId();
         this.cardNumber = event.getCardNumber();
         this.cardHolderFullName = event.getCardHolderFullName();
@@ -60,19 +61,20 @@ public class CardAggregate {
     }
 
     @CommandHandler
-    public void handle(CreateCardBalanceCommand command){
+    public void handle(@Validated CreateCardBalanceCommand command) {
         CardBalanceCreatedEvent cardBalanceCreatedEvent =
-                 CardBalanceCreatedEvent
-                         .builder()
-                         .userId(command.getUserId())
-                         .cardId(command.getCardId())
-                         .cardNumber(command.getCardNumber())
-                         .balanceAmount(command.getBalanceAmount())
-                         .build();
+                CardBalanceCreatedEvent
+                        .builder()
+                        .userId(command.getUserId())
+                        .cardId(command.getCardId())
+                        .cardNumber(command.getCardNumber())
+                        .balanceAmount(command.getBalanceAmount())
+                        .build();
         AggregateLifecycle.apply(cardBalanceCreatedEvent);
     }
+
     @CommandHandler
-    public void handle(DeleteCardCommand deleteCardCommand) {
+    public void handle(@Validated DeleteCardCommand deleteCardCommand) {
         CardDeletedEvent cardDeletedEvent = new CardDeletedEvent();
         cardDeletedEvent.setCardNumber(deleteCardCommand.getCardNumber());
         AggregateLifecycle.apply(cardDeletedEvent);
@@ -90,7 +92,7 @@ public class CardAggregate {
 //    }
 
     @EventSourcingHandler
-    protected void on(CardBalanceCreatedEvent event) {
+    protected void on(@Validated CardBalanceCreatedEvent event) {
         this.cardNumber = event.getCardNumber();
         this.balanceAmount = event.getBalanceAmount();
     }

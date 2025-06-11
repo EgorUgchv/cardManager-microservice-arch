@@ -1,6 +1,5 @@
 package com.balanceservice.dto;
 
-import com.balanceservice.dto.enums.BalanceStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -15,7 +14,6 @@ public class CardBalanceDto {
     @Pattern(regexp = "\\d{16}", message = "The card number must contain only 16 digits")
     @NotBlank
     private String cardNumber;
+    @Min(value = 0, message = "The balance amount must be no less than 0")
     private Long balanceAmount;
-    @Min(0)
-    private BalanceStatus balanceStatus;
 }

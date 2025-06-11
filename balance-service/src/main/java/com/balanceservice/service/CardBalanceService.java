@@ -8,6 +8,7 @@ import com.balanceservice.repository.CardBalanceRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 @AllArgsConstructor
@@ -15,7 +16,7 @@ public class CardBalanceService {
     private final CardBalanceRepository balanceRepository;
     private final CardBalanceMapper cardBalanceMapper;
     @Transactional
-    public int createBalance(CardBalanceDto cardBalanceDto) {
+    public int createBalance(@Validated CardBalanceDto cardBalanceDto) {
         Balance balance = cardBalanceMapper.mapToBalance(cardBalanceDto);
         if(!balanceRepository.existsByEncryptedCardNumber(cardBalanceDto.getCardNumber())){
             Balance savedCardBalance = balanceRepository.save(balance);
