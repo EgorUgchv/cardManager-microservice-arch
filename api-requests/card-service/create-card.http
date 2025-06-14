@@ -3,9 +3,9 @@ Content-Type: application/json
 
 {
   "userId": 1,
-  "cardNumber": 9239999999123418,
+  "cardNumber": 9259997899125438,
   "cardHolderFullName": "John Doe TEsstst",
   "expiryDate": "2026-05-23",
-  "balanceAmount": -3,
+  "balanceAmount": 3,
   "cardStatus": "ACTIVE"
 }

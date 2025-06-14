@@ -1,9 +1,7 @@
 package com.cardservice.grpc;
 
-import card.CardResponse;
 import card.CardServiceGrpc;
 import com.cardservice.dto.CardDto;
-import com.cardservice.dto.CardResponseDto;
 import com.cardservice.exception.CardAlreadyExistsException;
 import com.cardservice.mapper.CardMapper;
 import com.cardservice.service.CardService;
@@ -25,6 +23,7 @@ public class CardGrpcService extends CardServiceGrpc.CardServiceImplBase {
     private final CardMapper cardMapper;
     private final CardService cardService;
     private final Validator validator;
+
     @Override
     public void createCard(card.CardRequest cardRequest,
                            StreamObserver<card.CardResponse> responseObserver) {
@@ -40,7 +39,7 @@ public class CardGrpcService extends CardServiceGrpc.CardServiceImplBase {
                 sendError(responseObserver, status);
                 return;
             }
-             cardService.createCard(cardDto, responseObserver);
+            cardService.createCard(cardDto, responseObserver);
 
 
         } catch (CardAlreadyExistsException e) {

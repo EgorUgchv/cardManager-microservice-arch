@@ -1,0 +1,11 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.3
+    command: ['start-dev']
+    container_name: keycloak
+    hostname: keycloak
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin1234
+    ports:
+      - "9191:8080"

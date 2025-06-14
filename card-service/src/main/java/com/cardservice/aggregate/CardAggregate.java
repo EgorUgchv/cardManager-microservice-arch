@@ -79,17 +79,7 @@ public class CardAggregate {
         cardDeletedEvent.setCardNumber(deleteCardCommand.getCardNumber());
         AggregateLifecycle.apply(cardDeletedEvent);
     }
-//    @CommandHandler
-//    public CardAggregate(@Validated CreateCardBalanceCommand createCardBalanceCommand) {
-//        CardCreatedEvent cardCreatedEvent = new C
-//        AggregateLifecycle.apply(
-//                new CardBalanceCreatedEvent(
-//                        createCardBalanceCommand.cardNumber,
-//                        createCardBalanceCommand.balanceAmount,
-//                        createCardBalanceCommand.balanceStatus
-//                )
-//        );
-//    }
+
 
     @EventSourcingHandler
     protected void on(@Validated CardBalanceCreatedEvent event) {

@@ -1,15 +1,19 @@
 package com.cardservice.saga;
 
 import com.cardservice.command.CreateCardBalanceCommand;
-import com.cardservice.config.Encryptor;
+import com.cardservice.command.DeleteCardCommand;
 import com.cardservice.dto.CardResponseDto;
-import com.cardservice.event.CardBalanceSuccessfullyCreatedEvent;
-import com.cardservice.event.CardSavedToDbEvent;
-import com.cardservice.event.CardSuccessfullyCreatedEvent;
+import com.cardservice.event.*;
+import com.cardservice.exception.BalanceServiceUnavailableException;
 import com.cardservice.kafka.KafkaProducer;
-import com.cardservice.repository.CardRepository;
+import com.cardservice.service.GrpcResponseRegistry;
+import io.grpc.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.eventhandling.EventBus;
+import org.axonframework.eventhandling.GenericEventMessage;
+import org.axonframework.modelling.command.AggregateLifecycle;
+import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.SagaLifecycle;
 import org.axonframework.modelling.saga.StartSaga;
@@ -23,6 +27,10 @@ public class CardManagementSaga {
     private transient CommandGateway commandGateway;
     @Autowired
     private transient KafkaProducer kafkaProducer;
+    @Autowired
+    private transient EventBus eventBus;
+    @Autowired
+    private transient GrpcResponseRegistry registry;
     private CardResponseDto cardResponseDto;
 
     public CardManagementSaga() {
@@ -32,16 +40,44 @@ public class CardManagementSaga {
     @SagaEventHandler(associationProperty = "cardNumber")
     public void handle(CardSavedToDbEvent event) {
         log.info("CardCreatedEvent in Saga for cardNumber : {}", event.getCardNumber());
+        try {
 
-        CreateCardBalanceCommand createCardBalanceCommand = CreateCardBalanceCommand.builder().userId(event.getUserId()).cardNumber(event.getCardNumber()).balanceAmount(event.getBalanceAmount()).cardId(event.getCardId()).build();
-        cardResponseDto = cardResponseDto.builder()
-                .userId(event.getUserId())
-                .cardId(event.getCardId())
-                .cardNumber(event.getCardNumber())
-                .cardHolderFullName(event.getCardHolderFullName())
-                .build();
+            CreateCardBalanceCommand createCardBalanceCommand = CreateCardBalanceCommand.builder().userId(event.getUserId()).cardNumber(event.getCardNumber()).balanceAmount(event.getBalanceAmount()).cardId(event.getCardId()).build();
+            cardResponseDto = cardResponseDto.builder()
+                    .userId(event.getUserId())
+                    .cardId(event.getCardId())
+                    .cardNumber(event.getCardNumber())
+                    .cardHolderFullName(event.getCardHolderFullName())
+                    .build();
 
-        commandGateway.send(createCardBalanceCommand);
+            commandGateway.send(createCardBalanceCommand);
+        }
+        catch (Exception e) {
+            log.error("Error in createCardBalanceCommand while creating the card balance ", e);
+            CardCreationFailedEvent failedEvent =  new CardCreationFailedEvent(event.getCardNumber(), e.getMessage());
+            eventBus.publish(GenericEventMessage.asEventMessage(failedEvent));
+            balanceNotCreatedCommand(event);
+
+        }
+    }
+    private void balanceNotCreatedCommand(CardSavedToDbEvent event) {
+        DeleteCardCommand deleteCardCommand =
+                DeleteCardCommand
+                        .builder()
+                        .cardNumber(event.getCardNumber())
+                        .build();
+        commandGateway.send(deleteCardCommand);
+    }
+
+    @SagaEventHandler(associationProperty = "cardNumber")
+    public void handle(CardCreationFailedEvent event) {
+        registry.fail(event.getCardNumber(), Status.INTERNAL.withDescription( event.getErrorMessage()));
+    }
+
+    @SagaEventHandler(associationProperty = "cardNumber")
+    @EndSaga
+    public void handle(CardDeletedEvent event){
+        log.info("CardDeletedEvent in Saga for cardNumber : {}", event.getCardNumber());
     }
 
     @SagaEventHandler(associationProperty = "cardNumber")
@@ -52,6 +88,7 @@ public class CardManagementSaga {
             sendFinalEvent(cardResponseDto);
         }
     }
+
 
     private void sendFinalEvent(CardResponseDto cardResponseDto) {
         CardSuccessfullyCreatedEvent cardCreatedEvent = CardSuccessfullyCreatedEvent.builder()

@@ -4,6 +4,8 @@ import com.cardservice.command.DeleteCardCommand;
 import com.cardservice.grpc.BalanceGrpcServiceClient;
 import com.cardservice.model.Card;
 import com.cardservice.repository.CardRepository;
+import com.cardservice.service.GrpcResponseRegistry;
+import io.grpc.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ public class CardEventsHandler {
     private final CardRepository cardRepository;
     private final BalanceGrpcServiceClient balanceGrpcServiceClient;
     private final CommandGateway commandGateway;
+    private final GrpcResponseRegistry registry;
     private final EventBus eventBus;
 
     @EventHandler
@@ -45,10 +48,10 @@ public class CardEventsHandler {
 
     @EventHandler
     public void on(CardBalanceCreatedEvent event) {
-        try {
 
             balanceGrpcServiceClient.createCardBalanceAsync(event.getCardNumber(),
                     event.getBalanceAmount(), response -> {
+
                         eventBus.publish(GenericEventMessage.asEventMessage(
                                 CardBalanceSuccessfullyCreatedEvent.builder()
                                         .cardNumber(event.getCardNumber())
@@ -58,20 +61,6 @@ public class CardEventsHandler {
                         log.info("Publish CardBalanceSuccessfullyCreatedEvent cardNumber {}", event.getCardNumber());
                     }
             );
-        } catch (Exception e) {
-            log.error("Error in CardBalanceCreatedEvent while creating the card balance ", e);
-            balanceNotCreatedCommand(event);
-        }
-
-    }
-
-    private void balanceNotCreatedCommand(CardBalanceCreatedEvent event) {
-        DeleteCardCommand deleteCardCommand =
-                DeleteCardCommand
-                        .builder()
-                        .cardNumber(event.getCardNumber())
-                        .build();
-        commandGateway.send(deleteCardCommand);
     }
 
     @EventHandler
@@ -80,4 +69,5 @@ public class CardEventsHandler {
             cardRepository.deleteByEncryptedCardNumber(event.getCardNumber());
         }
     }
+
 }
