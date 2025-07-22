@@ -95,7 +95,7 @@ public class CardManagementSaga {
                 .cardId(cardResponseDto.getCardId())
                 .userId(cardResponseDto.getUserId())
                 .balanceId(cardResponseDto.getBalanceId())
-                .cardHolderFullName(cardResponseDto.getCardNumber())
+                .cardHolderFullName(cardResponseDto.getCardHolderFullName())
                 .cardNumber(cardResponseDto.getCardNumber())
                 .build();
         kafkaProducer.sendEvent(cardCreatedEvent);

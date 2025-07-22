@@ -1,0 +1,41 @@
+server:
+  port: 4010
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                          allowed-origins: "*"
+                          allowed-methods: "*"
+                          allowed-headers: "*"
+                          allow-credentials: false
+          routes:
+            - id: openapi
+              uri: http://localhost:${server.port}
+              predicates:
+                - Path=/v3/api-docs/**
+              filters:
+                - RewritePath=/v3/api-docs/?(?<segment>.*), /${segment}/v3/api-docs
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${REALM_URL}
+
+OAUTH2_SERVER_URL: http://localhost:9191
+REALM_URL: ${OAUTH2_SERVER_URL}/realms/cardManagement
+
+
+springdoc:
+  swagger-ui:
+    use-root-path: true
+
